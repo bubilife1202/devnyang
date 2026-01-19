@@ -186,17 +186,17 @@ export default function NewRequestPage() {
         )}
 
         <div className="flex gap-4">
-          <button
+<button
             type="button"
             onClick={() => router.back()}
-            className="flex-1 py-3 px-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-medium rounded-lg transition"
+            className="flex-1 py-3 px-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-medium rounded-lg transition cursor-pointer"
           >
             취소
           </button>
-          <button
+<button
             type="submit"
             disabled={loading}
-            className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition"
+            className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition cursor-pointer"
           >
             {loading ? '등록 중...' : '의뢰 등록하기'}
           </button>

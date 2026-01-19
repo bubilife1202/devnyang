@@ -11,28 +11,28 @@ export default async function HomePage() {
       <nav className="fixed top-0 w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-white">
+            <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-white cursor-pointer">
               데브냥
             </Link>
             <div className="flex items-center gap-4">
               {user ? (
-                <Link
+<Link
                   href="/dashboard"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition cursor-pointer"
                 >
                   대시보드
                 </Link>
               ) : (
                 <>
-                  <Link
+<Link
                     href="/login"
-                    className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                    className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                   >
                     로그인
                   </Link>
-                  <Link
+<Link
                     href="/signup"
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition cursor-pointer"
                   >
                     시작하기
                   </Link>
@@ -56,15 +56,15 @@ export default async function HomePage() {
             역경매 방식으로 최적의 개발자를 찾을 수 있습니다.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
+<Link
               href="/signup"
-              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition text-lg"
+              className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition text-lg cursor-pointer"
             >
               무료로 시작하기
             </Link>
-            <Link
+<Link
               href="/requests"
-              className="px-8 py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-medium rounded-xl transition text-lg"
+              className="px-8 py-4 border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-900 dark:text-white font-medium rounded-xl transition text-lg cursor-pointer"
             >
               의뢰 둘러보기
             </Link>
@@ -195,9 +195,9 @@ export default async function HomePage() {
           <p className="text-blue-100 mb-8 text-lg">
             무료로 가입하고 첫 프로젝트를 등록하거나 개발 기회를 찾아보세요.
           </p>
-          <Link
+<Link
             href="/signup"
-            className="inline-block px-8 py-4 bg-white hover:bg-zinc-100 text-blue-600 font-medium rounded-xl transition text-lg"
+            className="inline-block px-8 py-4 bg-white hover:bg-zinc-100 text-blue-600 font-medium rounded-xl transition text-lg cursor-pointer"
           >
             무료로 시작하기
           </Link>

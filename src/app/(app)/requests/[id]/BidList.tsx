@@ -93,11 +93,11 @@ export default function BidList({ bids, canSelect }: BidListProps) {
                 )}
 
                 {bid.developer?.portfolio_url && (
-                  <a
+<a
                     href={bid.developer.portfolio_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 mb-3"
+                    className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 mb-3 transition cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -127,10 +127,10 @@ export default function BidList({ bids, canSelect }: BidListProps) {
               </div>
 
               {canSelect && !selectedBid && (
-                <button
+<button
                   onClick={() => handleSelect(bid.id)}
                   disabled={loading === bid.id}
-                  className="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-sm font-medium rounded-lg transition"
+                  className="ml-4 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white text-sm font-medium rounded-lg transition cursor-pointer"
                 >
                   {loading === bid.id ? '처리 중...' : '선택하기'}
                 </button>

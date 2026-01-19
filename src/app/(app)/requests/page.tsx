@@ -70,10 +70,10 @@ export default async function RequestsPage() {
       ) : (
         <div className="space-y-4">
           {formattedRequests.map((request) => (
-            <Link
+<Link
               key={request.id}
               href={`/requests/${request.id}`}
-              className="block bg-white dark:bg-zinc-900 rounded-xl p-6 hover:shadow-lg transition border border-zinc-200 dark:border-zinc-800"
+              className="block bg-white dark:bg-zinc-900 rounded-xl p-6 hover:shadow-lg transition border border-zinc-200 dark:border-zinc-800 cursor-pointer"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">

@@ -96,9 +96,9 @@ export default async function DeveloperDashboardPage() {
             입찰 현황과 새로운 기회를 확인하세요.
           </p>
         </div>
-        <Link
+<Link
           href="/requests"
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition"
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition cursor-pointer"
         >
           의뢰 찾기
         </Link>
@@ -137,9 +137,9 @@ export default async function DeveloperDashboardPage() {
               <p className="text-zinc-600 dark:text-zinc-400 mb-4">
                 아직 입찰한 의뢰가 없습니다.
               </p>
-              <Link
+<Link
                 href="/requests"
-                className="text-blue-600 hover:text-blue-500 font-medium"
+                className="text-blue-600 hover:text-blue-500 font-medium transition cursor-pointer"
               >
                 의뢰 찾아보기 →
               </Link>
@@ -150,10 +150,10 @@ export default async function DeveloperDashboardPage() {
                 const statusBadge = getBidStatusBadge(bid.is_selected, bid.request?.status || '')
                 
                 return (
-                  <Link
+<Link
                     key={bid.id}
                     href={`/requests/${bid.request_id}`}
-                    className="block p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition"
+                    className="block p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition cursor-pointer"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -186,9 +186,9 @@ export default async function DeveloperDashboardPage() {
             <h2 className="text-lg font-semibold text-zinc-900 dark:text-white">
               새로운 기회
             </h2>
-            <Link
+<Link
               href="/requests"
-              className="text-sm text-blue-600 hover:text-blue-500"
+              className="text-sm text-blue-600 hover:text-blue-500 transition cursor-pointer"
             >
               전체 보기
             </Link>
@@ -202,10 +202,10 @@ export default async function DeveloperDashboardPage() {
           ) : (
             <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
               {formattedOpenRequests.map((request) => (
-                <Link
+<Link
                   key={request.id}
                   href={`/requests/${request.id}`}
-                  className="block p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition"
+                  className="block p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition cursor-pointer"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">

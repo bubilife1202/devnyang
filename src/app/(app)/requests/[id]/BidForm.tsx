@@ -156,19 +156,19 @@ export default function BidForm({ requestId, budgetMin, budgetMax, existingBid }
         )}
 
         <div className="flex gap-3">
-          <button
+<button
             type="submit"
             disabled={loading}
-            className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition"
+            className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition cursor-pointer"
           >
             {loading ? '처리 중...' : isEditing ? '수정하기' : '입찰하기'}
           </button>
           {isEditing && (
-            <button
+<button
               type="button"
               onClick={handleDelete}
               disabled={loading}
-              className="py-3 px-4 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium rounded-lg transition"
+              className="py-3 px-4 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 disabled:cursor-not-allowed font-medium rounded-lg transition cursor-pointer"
             >
               취소
             </button>

@@ -76,9 +76,9 @@ export default function OnboardingPage() {
               </p>
 
               <div className="grid gap-4">
-                <button
+<button
                   onClick={() => handleRoleSelect('client')}
-                  className="p-6 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition group text-left"
+                  className="p-6 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl hover:border-blue-500 dark:hover:border-blue-500 transition group text-left cursor-pointer"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition">
@@ -98,9 +98,9 @@ export default function OnboardingPage() {
                   </div>
                 </button>
 
-                <button
+<button
                   onClick={() => handleRoleSelect('developer')}
-                  className="p-6 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition group text-left"
+                  className="p-6 border-2 border-zinc-200 dark:border-zinc-700 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition group text-left cursor-pointer"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-900/50 transition">
@@ -125,10 +125,10 @@ export default function OnboardingPage() {
 
           {step === 2 && (
             <form onSubmit={handleSubmit}>
-              <button
+<button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-4"
+                className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white mb-4 transition cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -205,10 +205,10 @@ export default function OnboardingPage() {
                   </div>
                 )}
 
-                <button
+<button
                   type="submit"
                   disabled={loading || !name}
-                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition"
+                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition cursor-pointer"
                 >
                   {loading ? '저장 중...' : '시작하기'}
                 </button>

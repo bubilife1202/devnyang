@@ -131,7 +131,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setRole('client')}
-                className={`p-4 border-2 rounded-xl transition text-left ${
+                className={`p-4 border-2 rounded-xl transition text-left cursor-pointer ${
                   role === 'client'
                     ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                     : 'border-zinc-200 dark:border-zinc-700 hover:border-blue-300'
@@ -143,7 +143,7 @@ export default function ProfilePage() {
               <button
                 type="button"
                 onClick={() => setRole('developer')}
-                className={`p-4 border-2 rounded-xl transition text-left ${
+                className={`p-4 border-2 rounded-xl transition text-left cursor-pointer ${
                   role === 'developer'
                     ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                     : 'border-zinc-200 dark:border-zinc-700 hover:border-green-300'
@@ -201,14 +201,14 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving || !name || !role}
-              className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition"
+              className="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white font-medium rounded-lg transition cursor-pointer"
             >
               {saving ? '저장 중...' : '저장하기'}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-medium rounded-lg transition"
+              className="px-6 py-3 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-medium rounded-lg transition cursor-pointer"
             >
               취소
             </button>

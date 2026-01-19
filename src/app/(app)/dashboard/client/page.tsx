@@ -87,9 +87,9 @@ export default async function ClientDashboardPage() {
             등록한 의뢰와 받은 입찰을 관리하세요.
           </p>
         </div>
-        <Link
+<Link
           href="/requests/new"
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition"
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition cursor-pointer"
         >
           새 의뢰 등록
         </Link>
@@ -127,9 +127,9 @@ export default async function ClientDashboardPage() {
           <p className="text-zinc-600 dark:text-zinc-400 mb-6">
             첫 번째 프로젝트를 등록하고 개발자들의 견적을 받아보세요.
           </p>
-          <Link
+<Link
             href="/requests/new"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -144,10 +144,10 @@ export default async function ClientDashboardPage() {
             const isOpen = request.status === 'open' && new Date(request.expires_at) > new Date()
             
             return (
-              <Link
+<Link
                 key={request.id}
                 href={`/requests/${request.id}`}
-                className="block bg-white dark:bg-zinc-900 rounded-xl p-6 hover:shadow-lg transition border border-zinc-200 dark:border-zinc-800"
+                className="block bg-white dark:bg-zinc-900 rounded-xl p-6 hover:shadow-lg transition border border-zinc-200 dark:border-zinc-800 cursor-pointer"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

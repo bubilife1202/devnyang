@@ -32,25 +32,25 @@ export default async function AppLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center gap-8">
-              <Link href="/dashboard" className="text-xl font-bold text-zinc-900 dark:text-white">
+              <Link href="/dashboard" className="text-xl font-bold text-zinc-900 dark:text-white cursor-pointer">
                 데브냥
               </Link>
               <div className="hidden md:flex items-center gap-6">
                 {profile.role === 'client' ? (
                   <>
-                    <Link href="/dashboard/client" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                    <Link href="/dashboard/client" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       내 의뢰
                     </Link>
-                    <Link href="/requests/new" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                    <Link href="/requests/new" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       새 의뢰
                     </Link>
                   </>
                 ) : (
                   <>
-                    <Link href="/dashboard/developer" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                    <Link href="/dashboard/developer" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       대시보드
                     </Link>
-                    <Link href="/requests" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                    <Link href="/requests" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       의뢰 찾기
                     </Link>
                   </>
@@ -72,14 +72,14 @@ export default async function AppLayout({
               </div>
               <Link
                 href="/profile"
-                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
               >
                 설정
               </Link>
               <form action={signOut}>
                 <button
                   type="submit"
-                  className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white"
+                  className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer"
                 >
                   로그아웃
                 </button>
