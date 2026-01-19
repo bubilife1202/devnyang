@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import { getMyBookmarks } from '@/lib/actions/bookmarks'
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('ko-KR').format(amount) + '원'
@@ -77,6 +78,9 @@ export default async function DeveloperDashboardPage() {
     bid_count: request.bids?.[0]?.count || 0
   })) || []
 
+  // 북마크 목록 조회
+  const bookmarks = await getMyBookmarks()
+
   // 통계 계산
   const stats = {
     totalBids: formattedBids.length,
@@ -123,6 +127,47 @@ export default async function DeveloperDashboardPage() {
           <p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{formatCurrency(stats.totalValue)}</p>
         </div>
       </div>
+
+      {/* 북마크 섹션 */}
+      {bookmarks.length > 0 && (
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 mb-6">
+          <div className="p-4 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-white flex items-center gap-2">
+              <svg className="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              북마크 ({bookmarks.length})
+            </h2>
+          </div>
+          <div className="divide-y divide-zinc-200 dark:divide-zinc-800 max-h-64 overflow-y-auto">
+            {bookmarks.map((bookmark) => (
+              <Link
+                key={bookmark.id}
+                href={`/requests/${bookmark.request_id}`}
+                className="block p-4 hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition cursor-pointer"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-zinc-900 dark:text-white truncate">
+                      {bookmark.request?.title}
+                    </h3>
+                    <p className="text-sm text-zinc-500 mt-1">
+                      예산: {formatCurrency(bookmark.request?.budget_min || 0)} ~ {formatCurrency(bookmark.request?.budget_max || 0)}
+                    </p>
+                  </div>
+                  <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                    bookmark.request?.status === 'open' 
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                      : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+                  }`}>
+                    {bookmark.request?.status === 'open' ? formatTimeLeft(bookmark.request?.expires_at || '') : '마감'}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* 내 입찰 목록 */}

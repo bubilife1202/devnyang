@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { signOut } from '@/lib/actions/auth'
+import NotificationBell from '@/components/NotificationBell'
 
 export default async function AppLayout({
   children,
@@ -44,6 +45,9 @@ export default async function AppLayout({
                     <Link href="/requests/new" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       새 의뢰
                     </Link>
+                    <Link href="/chat" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
+                      메시지
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -53,11 +57,18 @@ export default async function AppLayout({
                     <Link href="/requests" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
                       의뢰 찾기
                     </Link>
+                    <Link href="/portfolio" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
+                      포트폴리오
+                    </Link>
+                    <Link href="/chat" className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition cursor-pointer">
+                      메시지
+                    </Link>
                   </>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-4">
+              <NotificationBell />
               <div className="flex items-center gap-2">
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                   profile.role === 'client' 

@@ -3,6 +3,12 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import BidForm from './BidForm'
 import BidList from './BidList'
+import BookmarkButton from './BookmarkButton'
+import ReviewSection from './ReviewSection'
+import PaymentSection from './PaymentSection'
+import { isBookmarked } from '@/lib/actions/bookmarks'
+import { canWriteReview, getReviewsForRequest } from '@/lib/actions/reviews'
+import { getPaymentForRequest } from '@/lib/actions/payments'
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('ko-KR').format(amount) + '원'
@@ -55,38 +61,57 @@ export default async function RequestDetailPage({
   const { id } = await params
   const supabase = await createClient()
   
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  // 의뢰 정보 조회
-  const { data: request } = await supabase
-    .from('requests')
-    .select(`
-      *,
-      client:profiles!requests_client_id_fkey(id, name, email)
-    `)
-    .eq('id', id)
-    .single()
+  // 1단계: user, request, bids, existingReviews 병렬 조회
+  const [
+    { data: { user } },
+    { data: request },
+    { data: bids },
+    existingReviews,
+  ] = await Promise.all([
+    supabase.auth.getUser(),
+    supabase
+      .from('requests')
+      .select(`
+        *,
+        client:profiles!requests_client_id_fkey(id, name, email)
+      `)
+      .eq('id', id)
+      .single(),
+    supabase
+      .from('bids')
+      .select(`
+        *,
+        developer:profiles!bids_developer_id_fkey(id, name, bio, portfolio_url)
+      `)
+      .eq('request_id', id)
+      .order('created_at', { ascending: true }),
+    getReviewsForRequest(id),
+  ])
 
   if (!request) {
     notFound()
   }
 
-  // 현재 사용자의 프로필 조회
-  const { data: profile } = user ? await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single() : { data: null }
-
-  // 입찰 목록 조회
-  const { data: bids } = await supabase
-    .from('bids')
-    .select(`
-      *,
-      developer:profiles!bids_developer_id_fkey(id, name, bio, portfolio_url)
-    `)
-    .eq('request_id', id)
-    .order('created_at', { ascending: true })
+  // 2단계: profile, reviewCheck, payment 병렬 조회 (user/request 필요)
+  const [profileResult, reviewCheckResult, payment] = await Promise.all([
+    user 
+      ? supabase.from('profiles').select('role').eq('id', user.id).single()
+      : Promise.resolve({ data: null }),
+    user 
+      ? canWriteReview(id) 
+      : Promise.resolve({ canWrite: false as const }),
+    (request.status === 'awarded' || request.status === 'completed')
+      ? getPaymentForRequest(id)
+      : Promise.resolve(null),
+  ])
+  
+  const profile = profileResult.data
+  // 타입 안전성을 위해 명시적 추출
+  const reviewCheck = {
+    canWrite: reviewCheckResult.canWrite,
+    revieweeId: 'revieweeId' in reviewCheckResult ? reviewCheckResult.revieweeId : undefined,
+    isClient: 'isClient' in reviewCheckResult ? reviewCheckResult.isClient : undefined,
+  }
 
   // 현재 사용자의 입찰 조회
   const myBid = user && bids?.find(bid => bid.developer_id === user.id)
@@ -96,6 +121,22 @@ export default async function RequestDetailPage({
   const isExpired = new Date(request.expires_at) < new Date()
   const canBid = isDeveloper && !isOwner && request.status === 'open' && !isExpired && !myBid
   const canEditBid = isDeveloper && myBid && request.status === 'open' && !isExpired
+
+  // 북마크 상태 확인 (isDeveloper 필요하므로 2단계 이후)
+  const bookmarked = isDeveloper ? await isBookmarked(id) : false
+
+  // 낙찰된 개발자 정보 (리뷰 대상 이름 표시용)
+  const awardedBid = bids?.find(b => b.is_selected)
+  let revieweeName = ''
+  if (reviewCheck.canWrite && reviewCheck.revieweeId) {
+    if (reviewCheck.isClient) {
+      // 의뢰자가 리뷰 작성 → 낙찰된 개발자 이름
+      revieweeName = awardedBid?.developer?.name || '개발자'
+    } else {
+      // 개발자가 리뷰 작성 → 의뢰자 이름
+      revieweeName = request.client?.name || '의뢰자'
+    }
+  }
 
   const statusBadge = getStatusBadge(request.status, request.expires_at)
 
@@ -123,9 +164,14 @@ export default async function RequestDetailPage({
               </span>
             )}
           </div>
-          <span className="text-sm text-zinc-500">
-            {bids?.length || 0}명 입찰
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-zinc-500">
+              {bids?.length || 0}명 입찰
+            </span>
+            {isDeveloper && !isOwner && (
+              <BookmarkButton requestId={id} initialBookmarked={bookmarked} />
+            )}
+          </div>
         </div>
 
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white mb-4">
@@ -202,7 +248,7 @@ export default async function RequestDetailPage({
 
       {/* 이미 입찰한 경우 안내 (개발자용) */}
       {isDeveloper && myBid && !canEditBid && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 mb-6">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -218,6 +264,53 @@ export default async function RequestDetailPage({
             </div>
           </div>
         </div>
+      )}
+
+      {/* 계약서 및 결제 섹션 (낙찰 완료된 의뢰에서만) */}
+      {(request.status === 'awarded' || request.status === 'completed') && awardedBid && (isOwner || (isDeveloper && myBid?.is_selected)) && (
+        <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">📄</span>
+              <div>
+                <h3 className="font-medium text-zinc-900 dark:text-white">계약서</h3>
+                <p className="text-sm text-zinc-500">프로젝트 계약 내용을 확인하세요</p>
+              </div>
+            </div>
+            <Link
+              href={`/requests/${id}/contract`}
+              className="px-4 py-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 font-medium rounded-lg transition cursor-pointer"
+            >
+              계약서 보기
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* 결제 섹션 (의뢰자 전용, 낙찰 완료된 의뢰에서만) */}
+      {isOwner && request.status === 'awarded' && awardedBid && (
+        <div className="mb-6">
+          <PaymentSection
+            requestId={id}
+            bidId={awardedBid.id}
+            amount={awardedBid.price}
+            developerName={awardedBid.developer?.name || '개발자'}
+            requestTitle={request.title}
+            payment={payment}
+          />
+        </div>
+      )}
+
+      {/* 리뷰 섹션 (낙찰 완료된 의뢰에서만 표시) */}
+      {user && (request.status === 'awarded' || request.status === 'completed') && (reviewCheck.canWrite || existingReviews.length > 0) && (
+        <ReviewSection
+          requestId={id}
+          revieweeId={reviewCheck.revieweeId || ''}
+          revieweeName={revieweeName}
+          isClient={reviewCheck.isClient || false}
+          existingReviews={existingReviews}
+          currentUserId={user.id}
+        />
       )}
     </div>
   )

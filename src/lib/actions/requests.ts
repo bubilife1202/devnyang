@@ -14,8 +14,10 @@ export async function createRequest(formData: FormData) {
 
   const title = formData.get('title') as string
   const description = formData.get('description') as string
-  const budget_min = parseInt(formData.get('budget_min') as string)
-  const budget_max = parseInt(formData.get('budget_max') as string)
+  const budgetMinStr = formData.get('budget_min')
+  const budgetMaxStr = formData.get('budget_max')
+  const budget_min = budgetMinStr ? parseInt(budgetMinStr as string, 10) : NaN
+  const budget_max = budgetMaxStr ? parseInt(budgetMaxStr as string, 10) : NaN
   const deadline = formData.get('deadline') as string | null
 
   // Validation
@@ -25,7 +27,7 @@ export async function createRequest(formData: FormData) {
   if (!description || description.length < 20) {
     return { error: '설명은 최소 20자 이상이어야 합니다.' }
   }
-  if (budget_min <= 0 || budget_max <= 0) {
+  if (isNaN(budget_min) || isNaN(budget_max) || budget_min <= 0 || budget_max <= 0) {
     return { error: '예산은 0보다 커야 합니다.' }
   }
   if (budget_min > budget_max) {
@@ -65,9 +67,15 @@ export async function updateRequest(formData: FormData) {
   const id = formData.get('id') as string
   const title = formData.get('title') as string
   const description = formData.get('description') as string
-  const budget_min = parseInt(formData.get('budget_min') as string)
-  const budget_max = parseInt(formData.get('budget_max') as string)
+  const budgetMinStr = formData.get('budget_min')
+  const budgetMaxStr = formData.get('budget_max')
+  const budget_min = budgetMinStr ? parseInt(budgetMinStr as string, 10) : NaN
+  const budget_max = budgetMaxStr ? parseInt(budgetMaxStr as string, 10) : NaN
   const deadline = formData.get('deadline') as string | null
+
+  if (isNaN(budget_min) || isNaN(budget_max) || budget_min <= 0 || budget_max <= 0) {
+    return { error: '예산은 0보다 커야 합니다.' }
+  }
 
   const { error } = await supabase
     .from('requests')

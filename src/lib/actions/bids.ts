@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { notifyNewBid, notifyAwarded, notifyNotSelected } from './notifications'
+import { createOrGetChatRoom } from './chat'
 
 export async function createBid(formData: FormData) {
   const supabase = await createClient()
@@ -12,22 +14,27 @@ export async function createBid(formData: FormData) {
   }
 
   const request_id = formData.get('request_id') as string
-  const price = parseInt(formData.get('price') as string)
+  const priceStr = formData.get('price')
+  const price = priceStr ? parseInt(priceStr as string, 10) : NaN
   const message = formData.get('message') as string | null
-  const estimated_days = formData.get('estimated_days') ? parseInt(formData.get('estimated_days') as string) : null
+  const estimatedDaysStr = formData.get('estimated_days')
+  const estimated_days = estimatedDaysStr ? parseInt(estimatedDaysStr as string, 10) : null
 
   // Validation
   if (!request_id) {
     return { error: '의뢰 정보가 없습니다.' }
   }
-  if (price <= 0) {
+  if (isNaN(price) || price <= 0) {
     return { error: '견적 금액은 0보다 커야 합니다.' }
+  }
+  if (estimated_days !== null && (isNaN(estimated_days) || estimated_days <= 0)) {
+    return { error: '예상 작업일은 0보다 커야 합니다.' }
   }
 
   // 의뢰 상태 확인
   const { data: request } = await supabase
     .from('requests')
-    .select('status, expires_at, client_id')
+    .select('status, expires_at, client_id, title')
     .eq('id', request_id)
     .single()
 
@@ -73,6 +80,24 @@ export async function createBid(formData: FormData) {
     return { error: error.message }
   }
 
+  // 개발자 이름 가져오기
+  const { data: developer } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('id', user.id)
+    .single()
+
+  // 의뢰자에게 알림 발송
+  await notifyNewBid(
+    request.client_id,
+    request.title,
+    request_id,
+    developer?.name || '개발자'
+  )
+
+  // 채팅방 자동 생성
+  await createOrGetChatRoom(request_id, user.id)
+
   revalidatePath(`/requests/${request_id}`)
   revalidatePath('/dashboard/developer')
   return { success: true }
@@ -87,9 +112,15 @@ export async function updateBid(formData: FormData) {
   }
 
   const bid_id = formData.get('bid_id') as string
-  const price = parseInt(formData.get('price') as string)
+  const priceStr = formData.get('price')
+  const price = priceStr ? parseInt(priceStr as string, 10) : NaN
   const message = formData.get('message') as string | null
-  const estimated_days = formData.get('estimated_days') ? parseInt(formData.get('estimated_days') as string) : null
+  const estimatedDaysStr = formData.get('estimated_days')
+  const estimated_days = estimatedDaysStr ? parseInt(estimatedDaysStr as string, 10) : null
+
+  if (isNaN(price) || price <= 0) {
+    return { error: '견적 금액은 0보다 커야 합니다.' }
+  }
 
   const { data: bid, error: bidError } = await supabase
     .from('bids')
@@ -167,6 +198,30 @@ export async function selectWinningBid(bidId: string) {
     return { error: '로그인이 필요합니다.' }
   }
 
+  // 낙찰 전 입찰 정보 가져오기
+  const { data: selectedBid } = await supabase
+    .from('bids')
+    .select('request_id, developer_id')
+    .eq('id', bidId)
+    .single()
+
+  if (!selectedBid) {
+    return { error: '입찰 정보를 찾을 수 없습니다.' }
+  }
+
+  // 의뢰 정보 가져오기
+  const { data: request } = await supabase
+    .from('requests')
+    .select('title')
+    .eq('id', selectedBid.request_id)
+    .single()
+
+  // 해당 의뢰의 모든 입찰자 가져오기 (알림용)
+  const { data: allBids } = await supabase
+    .from('bids')
+    .select('developer_id')
+    .eq('request_id', selectedBid.request_id)
+
   // RPC 함수 호출 (트랜잭션 보장)
   const { error } = await supabase.rpc('select_winning_bid', {
     p_bid_id: bidId,
@@ -177,17 +232,28 @@ export async function selectWinningBid(bidId: string) {
     return { error: error.message }
   }
 
-  // 입찰 정보 가져와서 revalidate
-  const { data: bid } = await supabase
-    .from('bids')
-    .select('request_id')
-    .eq('id', bidId)
-    .single()
+  // 낙찰자에게 알림
+  await notifyAwarded(
+    selectedBid.developer_id,
+    request?.title || '의뢰',
+    selectedBid.request_id
+  )
 
-  if (bid) {
-    revalidatePath(`/requests/${bid.request_id}`)
-    revalidatePath('/dashboard/client')
+  // 미선택 개발자들에게 알림
+  if (allBids) {
+    for (const bid of allBids) {
+      if (bid.developer_id !== selectedBid.developer_id) {
+        await notifyNotSelected(
+          bid.developer_id,
+          request?.title || '의뢰',
+          selectedBid.request_id
+        )
+      }
+    }
   }
+
+  revalidatePath(`/requests/${selectedBid.request_id}`)
+  revalidatePath('/dashboard/client')
 
   return { success: true }
 }
