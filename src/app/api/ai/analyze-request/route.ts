@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       ? `프로젝트 제목: ${title}\n\n프로젝트 설명:\n${description}`
       : `프로젝트 설명:\n${description}`
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-preview-05-20' })
     
     const result = await model.generateContent([
       { text: SYSTEM_PROMPT },
