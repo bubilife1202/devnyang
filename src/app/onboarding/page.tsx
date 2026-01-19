@@ -180,11 +180,21 @@ export default function OnboardingPage() {
                     </label>
                     <input
                       id="portfolio"
-                      type="url"
+                      type="text"
                       value={portfolioUrl}
-                      onChange={(e) => setPortfolioUrl(e.target.value)}
+                      onChange={(e) => {
+                        let value = e.target.value
+                        // 자동으로 https:// 붙이기 (입력 시작할 때)
+                        if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+                          // 도메인 형태로 보이면 https:// 자동 추가
+                          if (value.includes('.') && !value.includes(' ')) {
+                            value = 'https://' + value
+                          }
+                        }
+                        setPortfolioUrl(value)
+                      }}
                       className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-                      placeholder="https://github.com/username"
+                      placeholder="github.com/username 또는 포트폴리오 주소"
                     />
                   </div>
                 )}
