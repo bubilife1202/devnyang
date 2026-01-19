@@ -58,7 +58,7 @@ export default async function AppLayout({
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
+              <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition">
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                   profile.role === 'client' 
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
@@ -69,7 +69,7 @@ export default async function AppLayout({
                 <span className="text-sm text-zinc-900 dark:text-white">
                   {profile.name}
                 </span>
-              </div>
+              </Link>
               <form action={signOut}>
                 <button
                   type="submit"
