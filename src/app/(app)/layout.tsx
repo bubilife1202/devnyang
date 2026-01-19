@@ -58,7 +58,7 @@ export default async function AppLayout({
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/profile" className="flex items-center gap-2 hover:opacity-80 transition">
+              <Link href="/profile" className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
                 <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                   profile.role === 'client' 
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
@@ -69,6 +69,9 @@ export default async function AppLayout({
                 <span className="text-sm text-zinc-900 dark:text-white">
                   {profile.name}
                 </span>
+                <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </Link>
               <form action={signOut}>
                 <button
