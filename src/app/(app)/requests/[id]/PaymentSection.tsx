@@ -6,7 +6,7 @@ import { createPayment, releasePayment } from '@/lib/actions/payments'
 
 declare global {
   interface Window {
-    TossPayments: (clientKey: string) => {
+    TossPayments?: (clientKey: string) => {
       requestPayment: (method: string, options: TossPaymentOptions) => Promise<void>
     }
   }
@@ -50,24 +50,34 @@ export default function PaymentSection({
 }: PaymentSectionProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [sdkLoaded, setSdkLoaded] = useState(false)
+  const [sdkLoaded, setSdkLoaded] = useState(() =>
+    typeof window !== 'undefined' && typeof window.TossPayments !== 'undefined'
+  )
   const router = useRouter()
 
   const clientKey = process.env.NEXT_PUBLIC_TOSS_CLIENT_KEY || ''
 
   useEffect(() => {
-    // 토스페이먼츠 SDK 로드
-    if (typeof window !== 'undefined' && !window.TossPayments) {
-      const script = document.createElement('script')
-      script.src = 'https://js.tosspayments.com/v2/standard'
-      script.onload = () => setSdkLoaded(true)
-      document.body.appendChild(script)
-    } else if (typeof window.TossPayments !== 'undefined') {
-      setSdkLoaded(true)
+    if (sdkLoaded) return
+    if (typeof window === 'undefined') return
+    if (window.TossPayments) return
+
+    const script = document.createElement('script')
+    script.src = 'https://js.tosspayments.com/v2/standard'
+    script.onload = () => setSdkLoaded(true)
+    script.onerror = () => setError('결제 모듈을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.')
+    document.body.appendChild(script)
+
+    return () => {
+      script.remove()
     }
-  }, [])
+  }, [sdkLoaded])
 
   const handlePayment = async () => {
+    if (!clientKey) {
+      setError('결제 설정이 필요합니다. 관리자에게 문의해주세요.')
+      return
+    }
     if (!sdkLoaded || !window.TossPayments) {
       setError('결제 모듈을 불러오는 중입니다.')
       return

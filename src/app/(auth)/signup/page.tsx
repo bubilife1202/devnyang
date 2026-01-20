@@ -4,6 +4,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
+export const dynamic = 'force-dynamic'
+
 export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -11,7 +13,15 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
-  const supabase = createClient()
+
+  const getSupabase = () => {
+    try {
+      return createClient()
+    } catch {
+      setError('회원가입 설정이 필요합니다. (Supabase 환경변수 미설정)')
+      return null
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,6 +38,12 @@ export default function SignUpPage() {
     }
 
     setLoading(true)
+
+    const supabase = getSupabase()
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -48,6 +64,10 @@ export default function SignUpPage() {
   }
 
   const handleOAuthLogin = async (provider: 'github' | 'google') => {
+    const supabase = getSupabase()
+    if (!supabase) {
+      return
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {

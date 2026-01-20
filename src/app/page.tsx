@@ -2,8 +2,18 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let user: unknown = null
+
+  // Supabase 환경변수가 없는 개발/프리뷰 환경에서도 홈은 렌더링되게 한다.
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    try {
+      const supabase = await createClient()
+      const result = await supabase.auth.getUser()
+      user = result.data.user
+    } catch {
+      user = null
+    }
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">

@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { UserRole } from '@/types/database'
 
+export const dynamic = 'force-dynamic'
+
 export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [role, setRole] = useState<UserRole | null>(null)
@@ -14,7 +16,15 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClient()
+
+  const getSupabase = () => {
+    try {
+      return createClient()
+    } catch {
+      setError('온보딩 설정이 필요합니다. (Supabase 환경변수 미설정)')
+      return null
+    }
+  }
 
   const handleRoleSelect = (selectedRole: UserRole) => {
     setRole(selectedRole)
@@ -27,6 +37,12 @@ export default function OnboardingPage() {
 
     setLoading(true)
     setError(null)
+
+    const supabase = getSupabase()
+    if (!supabase) {
+      setLoading(false)
+      return
+    }
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
