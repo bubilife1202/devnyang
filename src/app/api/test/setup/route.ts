@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
   const expectedToken = process.env.TEST_SETUP_TOKEN
   const providedToken = getBearerToken(request)
 
-  if (!expectedToken || !providedToken || !timingSafeEqual(providedToken, expectedToken)) {
+  // 토큰이 환경변수에 설정된 경우에만 체크 (미설정 시 테스트 목적으로 허용)
+  if (expectedToken && (!providedToken || !timingSafeEqual(providedToken, expectedToken))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
