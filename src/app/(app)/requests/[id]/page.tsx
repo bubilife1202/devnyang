@@ -117,13 +117,13 @@ export default async function RequestDetailPage({
   const myBid = user && bids?.find(bid => bid.developer_id === user.id)
 
   const isOwner = user?.id === request.client_id
-  const isDeveloper = profile?.role === 'developer'
   const isExpired = new Date(request.expires_at) < new Date()
-  const canBid = isDeveloper && !isOwner && request.status === 'open' && !isExpired && !myBid
-  const canEditBid = isDeveloper && myBid && request.status === 'open' && !isExpired
+  // 자기 의뢰가 아니면 누구나 입찰 가능 (역할 무관)
+  const canBid = user && !isOwner && request.status === 'open' && !isExpired && !myBid
+  const canEditBid = myBid && request.status === 'open' && !isExpired
 
-  // 북마크 상태 확인 (isDeveloper 필요하므로 2단계 이후)
-  const bookmarked = isDeveloper ? await isBookmarked(id) : false
+  // 북마크 상태 확인 (로그인 유저면 가능)
+  const bookmarked = user && !isOwner ? await isBookmarked(id) : false
 
   // 낙찰된 개발자 정보 (리뷰 대상 이름 표시용)
   const awardedBid = bids?.find(b => b.is_selected)
@@ -168,7 +168,7 @@ export default async function RequestDetailPage({
             <span className="text-sm text-zinc-500">
               {bids?.length || 0}명 입찰
             </span>
-            {isDeveloper && !isOwner && (
+            {user && !isOwner && (
               <BookmarkButton requestId={id} initialBookmarked={bookmarked} />
             )}
           </div>
@@ -246,8 +246,8 @@ export default async function RequestDetailPage({
         </div>
       )}
 
-      {/* 이미 입찰한 경우 안내 (개발자용) */}
-      {isDeveloper && myBid && !canEditBid && (
+      {/* 이미 입찰한 경우 안내 */}
+      {myBid && !canEditBid && (
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800 mb-6">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -267,7 +267,7 @@ export default async function RequestDetailPage({
       )}
 
       {/* 계약서 및 결제 섹션 (낙찰 완료된 의뢰에서만) */}
-      {(request.status === 'awarded' || request.status === 'completed') && awardedBid && (isOwner || (isDeveloper && myBid?.is_selected)) && (
+      {(request.status === 'awarded' || request.status === 'completed') && awardedBid && (isOwner || myBid?.is_selected) && (
         <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
