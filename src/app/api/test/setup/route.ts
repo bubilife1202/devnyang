@@ -120,6 +120,31 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  // 테스트용 의뢰 생성 (client 계정으로)
+  const expiresAt = new Date()
+  expiresAt.setHours(expiresAt.getHours() + 48)
+
+  const { data: testRequest, error: requestError } = await admin
+    .from('requests')
+    .insert({
+      client_id: clientUser.user.id,
+      title: `[테스트] 웹 서비스 개발 의뢰 (${runId})`,
+      description: '테스트용 의뢰입니다. E2E 테스트를 위해 자동 생성되었습니다. React와 Node.js를 사용한 웹 서비스 개발을 의뢰합니다. 사용자 인증, 대시보드, API 연동 기능이 필요합니다.',
+      budget_min: 1000000,
+      budget_max: 3000000,
+      status: 'open',
+      expires_at: expiresAt.toISOString(),
+    })
+    .select()
+    .single()
+
+  if (requestError) {
+    return NextResponse.json(
+      { error: requestError.message || 'Failed to create test request' },
+      { status: 500 }
+    )
+  }
+
   return NextResponse.json({
     success: true,
     runId,
@@ -134,6 +159,10 @@ export async function POST(request: NextRequest) {
         email: developerEmail,
         password: developerPassword,
       },
+    },
+    testRequest: {
+      id: testRequest.id,
+      title: testRequest.title,
     },
   })
 }
