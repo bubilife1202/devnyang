@@ -115,6 +115,10 @@ export default function NewRequestPage() {
       return
     }
 
+    // 48시간 후 만료
+    const expiresAt = new Date()
+    expiresAt.setHours(expiresAt.getHours() + 48)
+
     const { data, error } = await supabase
       .from('requests')
       .insert({
@@ -124,6 +128,8 @@ export default function NewRequestPage() {
         budget_min: min,
         budget_max: max,
         deadline: deadline || null,
+        status: 'open',
+        expires_at: expiresAt.toISOString(),
       })
       .select()
       .single()
